@@ -9,12 +9,27 @@ material_data_path = os.path.join(dirname, "data/Bone_Material_Law.xlsx")
 
 class MaterialLaw:
     def __init__(self, name, site, measure, law, range_measure, speed_rate):
-        self. name = name
+        self.name = name
         self.site = site
         self.measure = measure
         self.law = law
         self.range_measure = range_measure
         self.speed_rate = speed_rate
+
+    def get_name(self):
+        return self.name
+
+    def get_site(self):
+        return self.site
+
+    def get_measure(self):
+        return self.measure
+
+    def get_range_measure(self):
+        return self.range_measure
+
+    def get_speed_rate(self):
+        return self.speed_rate
 
     def modify_name(self, new_name):
         self.name = new_name
@@ -31,12 +46,19 @@ class MaterialLaw:
     def modify_range(self, new_range):
         self.range_measure = new_range
 
-    def get_law(self, rate=0):
+    def modify_speed_rate(self, new_speed_rate):
+        self.speed_rate = new_speed_rate
+
+    def get_formula(self, rate=None):
+        if not rate:
+            _rate = self.speed_rate[0]
+        else:
+            _rate = rate
         self_measure = self.measure
 
         def fun(density):
             formula = self.law.split('=')[-1]
-            _vars = {self_measure: density, 'eps_dev': rate}
+            _vars = {self_measure: density, 'eps_dev': _rate}
             return calc.evaluate(formula, _vars)
 
         return fun
