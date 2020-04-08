@@ -200,6 +200,8 @@ def evaluate(expression, vars={}):
 
     return value
 
+
+
 '''
 print(evaluate("1 + 2 ^ 3"))
 print(evaluate("(1 + 2) ^ 3"))
