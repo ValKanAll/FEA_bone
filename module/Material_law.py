@@ -28,6 +28,9 @@ class MaterialLaw:
     def get_range_measure(self):
         return self.range_measure
 
+    def get_law(self):
+        return self.law
+
     def get_speed_rate(self):
         return self.speed_rate
 

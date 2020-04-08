@@ -13,13 +13,23 @@ material_data = ml.MaterialData(material_data_path)
 
 plt.figure()
 for law in material_data.material_laws:
-    if law.measure == 'ρapp':
+    cond_vertebra1 = (law.get_site().find('vertebra') > 0)
+    cond_vertebra2 = (law.get_site().find('spine') > 0)
+    if cond_vertebra1 or cond_vertebra2:
         formula = law.get_formula()
         range_measure = law.get_range_measure()
         t = np.linspace(range_measure[0], range_measure[1], 100)
         y = [formula(x) for x in t]
-        plt.plot(t, y, label=law.get_name()+'_'+law.get_site())
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+        ref = law.get_name()+'_'+law.get_site()
+        plt.plot(t, y, label=ref)
+
+        print(law.get_name()+'\t'+law.get_site() + '\tE(rho=0.129g/cm3):\t'+ str(formula(0.129)*1000) + 'MPa')
+        print(law.get_law())
+
+plt.tight_layout()
+plt.legend(loc='upper right', borderaxespad=0.)
+plt.xlabel('density (g/cm^3)')
+plt.ylabel('E (GPa)')
 plt.show()
 
 
