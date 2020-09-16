@@ -1,2 +1,7 @@
 pip install pandas
 pip install xlrd
+pip install vtk
+
+conda install -c conda-forge pydicom
+pip install opencv-python
+conda install -c conda-forge gdcm
