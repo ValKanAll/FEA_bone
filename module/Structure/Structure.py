@@ -1,6 +1,6 @@
 
 class Simulation:
-    def __init__(self, ID_sim, ID_mekamesh, loads, script_path):
+    def __init__(self, ID_sim, ID_mekamesh, loads, script_path, results):
         # Test type
         if type(ID_sim) == str:
             self.ID_sim = ID_sim
@@ -22,7 +22,15 @@ class Simulation:
         else:
             raise NameError('script_path is not a string')
 
-    def get_ID_sim(self):
+        try:
+            for r in results:
+                if type(r) != Result:
+                    raise NameError('result in result list is not a Result type')
+            self.results = results
+        except:
+            raise NameError('result is not a list of Result type')
+
+    def get_ID_simulation(self):
         return self.ID_sim
 
     def get_ID_mekamesh(self):
@@ -33,6 +41,61 @@ class Simulation:
 
     def get_script_path(self):
         return self.script_path
+
+    def get_result(self):
+        return self.results
+
+    def add_load(self, new_load):
+        if type(new_load) == Load:
+            if new_load.get_ID_simulation() == self.ID_sim:
+                for load in self.loads:
+                    if load.get_ID_load() == new_load.get_ID_load():
+                        raise NameError('load already in the list')
+                else:
+                    self.results.append(new_load)
+            else:
+                raise NameError('simulation ID does not match')
+        else:
+            raise NameError('new load is not type Load')
+
+    def suppress_load(self, ID_load):
+        index = 0
+        found = False
+        while not found:
+            for load in self.loads:
+                if load.get_ID_load() == ID_load:
+                    self.loads.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('load ID not found in the list')
+                found = True
+
+    def add_result(self, new_result):
+        if type(new_result) == Result:
+            if new_result.get_ID_simulation() == self.ID_sim:
+                for result in self.results:
+                    if result.get_ID_result() == new_result.get_ID_result():
+                        raise NameError('result already in the list')
+                else:
+                    self.results.append(new_result)
+            else:
+                raise NameError('simulation ID does not match')
+        else:
+            raise NameError('new result is not type Result')
+
+    def suppress_result(self, ID_result):
+        index = 0
+        found = False
+        while not found:
+            for result in self.results:
+                if result.get_ID_result() == ID_result:
+                    self.results.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('result ID not found in the list')
+                found = True
 
     def modify_ID_sim(self, new_value):
         if type(new_value) == str:
@@ -48,16 +111,6 @@ class Simulation:
             raise NameError('new ID_mekamesh is not a string')
         return self.ID_mekamesh
 
-    def modify_loads(self, new_loads):
-        try:
-            for l in new_loads:
-                if type(l) != Load:
-                    raise NameError('load in new load list is not a Load type')
-            self.loads = new_loads
-        except:
-            raise NameError('loads is not a list of Load type')
-        return self.loads
-
     def modify_script_path(self, new_path):
         if type(new_path) == str:
             self.script_path = new_path
@@ -66,8 +119,19 @@ class Simulation:
         return self.script_path
 
 
+class Result:
+    def __init__(self, ID_result):
+        pass
+    #type stress strain VM volume
+
+
 class Load:
-    def __init__(self, load_type, vector):
+    def __init__(self, ID_load, load_type, vector):
+        # Test type
+        if type(ID_load) == str:
+            self.ID_load = ID_load
+        else:
+            raise NameError('ID_load is not a string')
         if type(load_type) in ['force', 'moment']:
             self.load_type = load_type
         else:
@@ -77,11 +141,21 @@ class Load:
         else:
             raise NameError('vector of the load is not a vector of 3')
 
+    def get_ID_load(self):
+        return self.ID_load
+
     def get_load_type(self):
         return self.load_type
 
     def get_vector(self):
         return self.vector
+
+    def modify_ID_load(self, new_value):
+        if type(new_value) == str:
+            self.ID_load = new_value
+        else:
+            raise NameError('new ID_load is not a string')
+        return self.ID_load
 
     def modify_load_type(self, new_load_type):
         if type(new_load_type) in ['force', 'moment']:
@@ -121,6 +195,38 @@ class Mekamesh:
             self.ID_mekamesh = ID_mekamesh
         else:
             raise NameError('ID_mekamesh')
+
+    # Define scans
+        self.simulation_list = []
+
+    def get_simulation_list(self):
+        return self.simulation_list
+
+    def add_simulation(self, new_simulation):
+        if type(new_simulation) == Simulation:
+            if new_simulation.get_ID_mekamesh() == self.ID_mekamesh:
+                for simulation in self.simulation_list:
+                    if simulation.get_ID_simulation() == new_simulation.get_ID_simulation():
+                        raise NameError('simulation already in the list')
+                else:
+                    self.simulation_list.append(new_simulation)
+            else:
+                raise NameError('mekamesh ID does not match')
+        else:
+            raise NameError('new simulation is not type Simulation')
+
+    def suppress_simulation(self, ID_simulation):
+        index = 0
+        found = False
+        while not found:
+            for simulation in self.simulation_list:
+                if simulation.get_ID_simulation() == ID_simulation:
+                    self.simulation_list.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('simulation ID not found in the list')
+                found = True
 
     def get_ID_mekamesh(self):
         return self.ID_mekamesh
@@ -197,6 +303,38 @@ class Mesh:
         else:
             raise NameError('named_selection is not a boolean')
 
+    # Define scans
+        self.mekamesh_list = []
+
+    def get_mekamesh_list(self):
+        return self.mekamesh_list
+
+    def add_stl(self, new_mekamesh):
+        if type(new_mekamesh) == Mekamesh:
+            if new_mekamesh.get_ID_mesh() == self.ID_mesh:
+                for mekamesh in self.mekamesh_list:
+                    if mekamesh.get_ID_mekamesh() == new_mekamesh.get_ID_mekamesh():
+                        raise NameError('mekamesh already in the list')
+                else:
+                    self.mekamesh_list.append(new_mekamesh)
+            else:
+                raise NameError('Mesh ID does not match')
+        else:
+            raise NameError('new mekamesh is not type Mekamesh')
+
+    def suppress_mekamesh(self, ID_mekamesh):
+        index = 0
+        found = False
+        while not found:
+            for mekamesh in self.mekamesh_list:
+                if mekamesh.get_ID_mekamesh() == ID_mekamesh:
+                    self.mekamesh_list.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('mekamesh ID not found in the list')
+                found = True
+
     def get_ID_mesh(self):
         return self.ID_mesh
 
@@ -267,6 +405,38 @@ class stl_volume:
         else:
             raise NameError('site is not a string')
 
+    # Define scans
+        self.mesh_list = []
+
+    def get_mesh_list(self):
+        return self.mesh_list
+
+    def add_mesh(self, new_mesh):
+        if type(new_mesh) == Mesh:
+            if new_mesh.get_ID_stl() == self.ID_stl:
+                for mesh in self.mesh_list:
+                    if mesh.get_ID_mesh() == new_mesh.get_ID_mesh():
+                        raise NameError('mesh already in the list')
+                else:
+                    self.mesh_list.append(new_mesh)
+            else:
+                raise NameError('stl ID does not match')
+        else:
+            raise NameError('new mesh is not type Mesh')
+
+    def suppress_mesh(self, ID_mesh):
+        index = 0
+        found = False
+        while not found:
+            for mesh in self.mesh_list:
+                if mesh.get_ID_mesh() == ID_mesh:
+                    self.mesh_list.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('mesh ID not found in the list')
+                found = True
+
     def get_ID_stl(self):
         return self.ID_stl
 
@@ -324,6 +494,38 @@ class Scan:
         else:
             raise NameError('resolution is not a list or is not a size 3')
 
+        # Define scans
+        self.stl_list = []
+
+    def get_stl_list(self):
+        return self.stl_list
+
+    def add_stl(self, new_stl):
+        if type(new_stl) == stl_volume:
+            if new_stl.get_ID_scan() == self.ID_scan:
+                for stl in self.stl_list:
+                    if stl.get_ID_stl() == new_stl.get_ID_stl():
+                        raise NameError('stl volume already in the list')
+                else:
+                    self.stl_list.append(new_stl)
+            else:
+                raise NameError('Scan ID does not match')
+        else:
+            raise NameError('new stl volume is not type stl volume')
+
+    def suppress_stl(self, ID_stl):
+        index = 0
+        found = False
+        while not found:
+            for stl in self.stl_list:
+                if stl.get_ID_stl() == ID_stl:
+                    self.stl_list.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('stl ID not found in the list')
+                found = True
+
     def get_ID_scan(self):
         return self.ID_scan
 
@@ -357,6 +559,7 @@ class Scan:
         
 class Patient:
     def __init__(self, ID_patient, age, sex, complement=None):
+        # Test type
         if type(ID_patient) == str:
             self.ID_patient = ID_patient
         else:
@@ -373,6 +576,38 @@ class Patient:
             self.complement = complement
         else:
             raise NameError('Complement info on patient is not a string')
+
+        # Define scans
+        self.scan_list = []
+
+    def get_scan_list(self):
+        return self.scan_list
+
+    def add_scan(self, new_scan):
+        if type(new_scan) == Scan:
+            if new_scan.get_ID_scan() == self.ID_patient:
+                for scan in self.scan_list:
+                    if scan.get_ID_scan() == new_scan.get_ID_scan():
+                        raise NameError('scan already in the list')
+                else:
+                    self.scan_list.append(new_scan)
+            else:
+                raise NameError('Patient ID does not match')
+        else:
+            raise NameError('new scan is not type scan')
+
+    def suppress_scan(self, ID_scan):
+        index = 0
+        found = False
+        while not found:
+            for scan in self.scan_list:
+                if scan.get_ID_scan() == ID_scan:
+                    self.scan_list.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('scan ID not found in the list')
+                found = True
 
     def get_ID_patient(self):
         return self.ID_patient
