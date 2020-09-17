@@ -1,3 +1,68 @@
+class Study:
+    def __init__(self, ID_study, name, simulations):
+        # Test type
+        if type(ID_study) == str:
+            self.ID_study = ID_study
+        else:
+            raise NameError('ID_study is not a string')
+        if type(name) == str:
+            self.name = name
+        else:
+            raise NameError('name is not a string')
+        try:
+            for s in simulations:
+                if type(s) != Simulation:
+                    raise NameError('simulation in simulation list is not a Simulation type')
+            self.simulations = simulations
+        except:
+            raise NameError('simulation is not a list of Simulation type')
+
+    def get_ID_study(self):
+        return self.ID_study
+
+    def get_name(self):
+        return self.name
+
+    def get_simulations(self):
+        return self.simulations
+
+    def modify_ID_study(self, new_value):
+        if type(new_value) == str:
+            self.ID_study = new_value
+        else:
+            raise NameError('new ID_study is not a string')
+        return self.ID_study
+
+    def modify_name(self, new_value):
+        if type(new_value) == str:
+            self.name = new_value
+        else:
+            raise NameError('new name is not a string')
+        return self.name
+
+    def add_simulation(self, new_simulation):
+        if type(new_simulation) == Simulation:
+            for simulation in self.simulation_list:
+                if simulation.get_ID_simulation() == new_simulation.get_ID_simulation():
+                    raise NameError('simulation already in the list')
+            else:
+                self.simulation_list.append(new_simulation)
+        else:
+            raise NameError('new simulation is not type Simulation')
+
+    def suppress_simulation(self, ID_simulation):
+        index = 0
+        found = False
+        while not found:
+            for simulation in self.simulation_list:
+                if simulation.get_ID_simulation() == ID_simulation:
+                    self.simulation_list.pop(index)
+                    found = True
+                index += 1
+            else:
+                raise NameError('simulation ID not found in the list')
+                found = True
+
 
 class Simulation:
     def __init__(self, ID_sim, ID_mekamesh, loads, script_path, results):
@@ -120,8 +185,24 @@ class Simulation:
 
 
 class Result:
-    def __init__(self, ID_result):
-        pass
+    def __init__(self, ID_result, ID_simu, result_type, result_generated, path=''):
+        # Test type
+        if type(ID_result) == str:
+            self.ID_result = ID_result
+        else:
+            raise NameError('ID_result is not a string')
+        if type(ID_simu) == str:
+            self.ID_simu = ID_simu
+        else:
+            raise NameError('ID_simu is not a string')
+        if type(path) == str:
+            self.path = path
+        else:
+            raise NameError('path is not a string')
+        if type(result_type) in ['strain', 'stress', 'volume', 'stress_VM']:
+            self.result_type = result_type
+        else:
+            raise NameError('result type is not properly defined')
     #type stress strain VM volume
 
 
